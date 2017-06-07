@@ -1,3 +1,12 @@
+# Final solution (Chapter 6)
+#
+# 34.8: flog total
+#  3.2: flog/method average
+#
+# 10.6: Bottles#verse                    lib/bottles.rb:11-18
+#  5.4: Bottles::BottleNumber::for       lib/bottles.rb:25-35
+#  5.0: Bottles#verses                   lib/bottles.rb:7-8
+
 class Bottles
 
   def song
@@ -9,49 +18,90 @@ class Bottles
   end
 
   def verse(n)
-    "#{quantity(n).capitalize} #{container(n)} of beer on the wall, " +
-    "#{quantity(n)} #{container(n)} of beer.\n" +
-    "#{action(n)}, " +
-    "#{quantity(successor(n))} #{container(successor(n))} of beer on the wall.\n"
+    bottle_number = BottleNumber.for(n)
+
+    "#{bottle_number.to_s.capitalize} of beer on the wall, " +
+    "#{bottle_number} of beer.\n" +
+    "#{bottle_number.action}, " +
+    "#{bottle_number.successor} of beer on the wall.\n"
   end
 
-  def container(n)
-    if n == 1
-      "bottle"
-    else
+  class BottleNumber
+    attr_reader :n
+
+    def self.for(n)
+      case n
+      when 0
+        BottleNumber0
+      when 1
+        BottleNumber1
+      when 6
+        BottleNumber6
+      else
+        BottleNumber
+      end.new(n)
+    end
+
+    def initialize(n)
+      @n = n
+    end
+
+    def to_s
+      "#{quantity} #{container}"
+    end
+
+    def container
       "bottles"
     end
-  end
 
-  def pronoun(n)
-    if n == 1
-      "it"
-    else
+    def pronoun
       "one"
     end
-  end
 
-  def quantity(n)
-    if n == 0
-      "no more"
-    else
+    def quantity
       n.to_s
     end
-  end
 
-  def action(n)
-    if n == 0
-      "Go to the store and buy some more"
-    else
-      "Take #{pronoun(n)} down and pass it around"
+    def action
+      "Take #{pronoun} down and pass it around"
+    end
+
+    def successor
+      BottleNumber.for(n-1)
     end
   end
 
-  def successor(n)
-    if n == 0
-      99
-    else
-      n-1
+  class BottleNumber0 < BottleNumber
+    def quantity
+      "no more"
+    end
+
+    def action
+      "Go to the store and buy some more"
+    end
+
+    def successor
+      BottleNumber.for(99)
+    end
+  end
+
+  class BottleNumber1 < BottleNumber
+    def container
+      "bottle"
+    end
+
+    def pronoun
+      "it"
+    end
+  end
+
+  class BottleNumber6 < BottleNumber
+    def container
+      "six-pack"
+    end
+
+    def quantity
+      "1"
     end
   end
 
